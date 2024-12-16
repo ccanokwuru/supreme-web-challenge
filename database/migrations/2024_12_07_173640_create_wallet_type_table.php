@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('team_user', function (Blueprint $table) {
+        Schema::table('wallet_types', function (Blueprint $table) {
+            //
             $table->id();
-            $table->foreignId('team_id')->nullable();
-            $table->foreignId('user_id');
-            $table->string('role')->nullable();
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->decimal('min_balance')->default(0);
+            $table->decimal('interest_rate')->default(1);
             $table->timestamps();
-
-            $table->unique(['team_id', 'user_id']);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('team_user');
+        Schema::dropIfExists('wallet_types');
     }
 };

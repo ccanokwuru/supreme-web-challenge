@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('team_user', function (Blueprint $table) {
+        Schema::table('wallets', function (Blueprint $table) {
+            //
             $table->id();
-            $table->foreignId('team_id')->nullable();
-            $table->foreignId('user_id');
-            $table->string('role')->nullable();
+            $table->foreign('user_id')->onDelete('set null')->onUpdate('cascade');
+            $table->foreign('wallet_type_id')->onDelete('set null')->onUpdate('cascade');
+            $table->string('currency')->default('NGN');
+            $table->decimal('balance')->default(0);
             $table->timestamps();
-
-            $table->unique(['team_id', 'user_id']);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('team_user');
+        Schema::dropIfExists('wallets');
     }
 };
