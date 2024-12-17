@@ -52,11 +52,18 @@ class TransactionController extends Controller
      *     )
      * )
      */
-    public function all_transactions(Request $request)
+    public function index(Request $request)
     {
         $perPage = $request->input('per_page', 15);
 
-        return response()->json(Transaction::paginate($perPage, ['*'], 'page', $request->input('page', 1)));
+        return response()->json(
+            Transaction::paginate(
+                $perPage,
+                ['*'],
+                'page',
+                $request->input('page', 1)
+            )
+        );
     }
 
     /**
@@ -202,14 +209,7 @@ class TransactionController extends Controller
         $perPage = $request->input('per_page', 15);
         $transactions = $query->paginate($perPage);
 
-        return response()->json([
-            'data' => $transactions->items(),
-            'meta' => [
-                'current_page' => $transactions->currentPage(),
-                'total' => $transactions->total(),
-                'per_page' => $transactions->perPage()
-            ]
-        ], 200);
+        return response()->json($transactions, 200);
     }
 
     /**
@@ -257,7 +257,7 @@ class TransactionController extends Controller
      *     )
      * )
      */
-    public function new_transaction(Request $request)
+    public function store(Request $request)
     {
         $validated = $request->validate([
             // Add your validation rules here
@@ -306,7 +306,7 @@ class TransactionController extends Controller
      *     )
      * )
      */
-    public function get_transaction(Transaction $transaction)
+    public function show(Transaction $transaction)
     {
         return response()->json([
             'message' => 'Transaction retrieved successfully',
@@ -358,13 +358,13 @@ class TransactionController extends Controller
      *     )
      * )
      */
-    public function update_transaction(Request $request, Transaction $transaction)
+    public function update(Request $request, string $id)
     {
         $validated = $request->validate([
             // Add your validation rules here
         ]);
-
-        $transaction->update($validated);
+        $transaction = Transaction::findOrFail($id)
+            ->update($validated);
         return response()->json([
             'message' => 'Transaction updated successfully',
             'data' => $transaction
@@ -395,8 +395,9 @@ class TransactionController extends Controller
      *     )
      * )
      */
-    public function delete_transaction(Transaction $transaction)
+    public function destroy(string $id)
     {
+        $transaction = Transaction::findOrFail($id);
         $transaction->delete();
         return response()->json(null, 204);
     }

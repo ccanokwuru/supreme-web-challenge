@@ -21,27 +21,67 @@ class WalletController extends Controller
      *     operationId="getWallets",
      *     summary="Display a listing of all wallets",
      *     tags={"Wallets"},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="List of all wallets",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(
-     *                  property="wallets", 
-     *                  type="array", 
-     *                  @OA\Items(ref="#/components/schemas/Wallet")
-     *             )
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/Wallet")
+     *             ),
+     *             @OA\Property(property="current_page", type="integer"),
+     *             @OA\Property(property="last_page", type="integer"),
+     *             @OA\Property(property="per_page", type="integer"),
+     *             @OA\Property(property="total", type="integer")
      *         )
      *     )
      * )
      * 
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json([
-            'wallets' => Wallet::all()
-        ]);
+        $perPage = $request->input('per_page', 15);
+
+        return response()->json(
+            Wallet::paginate(
+                $perPage,
+                ['*'],
+                'page',
+                $request->input('page', 1)
+            )
+        );
     }
 
     /**
@@ -92,6 +132,8 @@ class WalletController extends Controller
 
         $wallet = Wallet::create($validated);
 
+        // $wallet = $wallet->with('user');
+
         return response()->json([
             'message' => 'Wallet created successfully',
             'wallet' => $wallet
@@ -118,7 +160,7 @@ class WalletController extends Controller
      *         description="Wallet details",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="wallet", ref="#/components/schemas/Wallet")
+     *             ref="#/components/schemas/Wallet"
      *         )
      *     ),
      *     @OA\Response(
@@ -127,14 +169,13 @@ class WalletController extends Controller
      *     )
      * )
      * 
-     * @param Wallet $wallet
+     * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Wallet $wallet)
+    public function show(string $id)
     {
-        return response()->json([
-            'wallet' => $wallet
-        ]);
+        $wallet = Wallet::find($id);
+        return response()->json($wallet);
     }
 
     /**
@@ -181,16 +222,17 @@ class WalletController extends Controller
      * )
      * 
      * @param Request $request
-     * @param Wallet $wallet
+     * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Wallet $wallet)
+    public function update(Request $request, string $id)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'balance' => 'required|numeric'
         ]);
 
+        $wallet = Wallet::findOrFail($id);
         $wallet->update($validated);
 
         return response()->json([
@@ -228,11 +270,12 @@ class WalletController extends Controller
      *     )
      * )
      * 
-     * @param Wallet $wallet
+     * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Wallet $wallet)
+    public function destroy(string $id)
     {
+        $wallet = Wallet::findOrFail($id);
         $wallet->delete();
 
         return response()->json([

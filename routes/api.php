@@ -27,17 +27,12 @@ use Illuminate\Support\Facades\Route;
 // protected routes
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('wallets', WalletController::class);
+    Route::get('wallets/search', [WalletController::class, 'search']);
     Route::apiResource('wallet-types', WalletTypeController::class);
-    Route::controller(TransactionController::class)->group(function () {
-        Route::post('/transactions', 'new_transaction');
-        Route::get('/transactions', 'all_transactions');
-        Route::get('/transactions/{id}', 'get_transaction');
-        Route::put('/transactions/{id}', 'update_transaction');
-        Route::delete('/transactions/{id}', 'delete_transaction');
-        Route::get('/transactions/search', 'search');
-    });
+    Route::get('wallet-types/search', [WalletTypeController::class, 'search']);
+    Route::apiResource('transactions', TransactionController::class);
+    Route::get('transactions/search', [TransactionController::class, 'search']);
 });
-
 
 // user routes
 Route::controller(UserController::class)->prefix('users')->group(function () {

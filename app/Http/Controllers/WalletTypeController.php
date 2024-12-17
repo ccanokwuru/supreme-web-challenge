@@ -31,6 +31,20 @@ class WalletTypeController extends Controller
      *     description="Returns a paginated list of all wallet types",
      *     operationId="indexWalletTypes",
      *     tags={"Wallet Types"},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -52,11 +66,23 @@ class WalletTypeController extends Controller
      *     )
      * )
      *
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(WalletType::paginate(10));
+        $perPage = $request->input(
+            'per_page',
+            15
+        );
+        return response()->json(response()->json(
+            WalletType::paginate(
+                $perPage,
+                ['*'],
+                'page',
+                $request->input('page', 1)
+            )
+        ));
     }
 
     /**

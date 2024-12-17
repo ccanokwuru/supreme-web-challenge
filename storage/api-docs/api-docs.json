@@ -17,7 +17,7 @@
                 ],
                 "summary": "Get all transactions",
                 "description": "Display a listing of all transactions.",
-                "operationId": "a2ced9de07880d5e387f93735e073a5b",
+                "operationId": "6581469356772e7a74a0d79897544f1a",
                 "parameters": [
                     {
                         "name": "page",
@@ -78,7 +78,7 @@
                 ],
                 "summary": "Create a new transaction",
                 "description": "Store a newly created transaction in storage.",
-                "operationId": "b58003178cb2e10dcde9e02db12d82bf",
+                "operationId": "ab765dced58cfe2f620929db31452145",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -286,7 +286,7 @@
                 ],
                 "summary": "Get a specific transaction",
                 "description": "Display the specified transaction.",
-                "operationId": "c70c7f0ac907e46be633d64149f38ddc",
+                "operationId": "b3d11351fb6ea87ee797d24314e3b7fa",
                 "parameters": [
                     {
                         "name": "id",
@@ -329,7 +329,7 @@
                 ],
                 "summary": "Update a specific transaction",
                 "description": "Update the specified transaction in storage.",
-                "operationId": "aba30056144017925892599f868e3905",
+                "operationId": "a3de6e068b921a033fb998246070466a",
                 "parameters": [
                     {
                         "name": "id",
@@ -385,7 +385,7 @@
                 ],
                 "summary": "Delete a specific transaction",
                 "description": "Remove the specified transaction from storage.",
-                "operationId": "67fbbfeb0c7ea057b39738bfc033ebb2",
+                "operationId": "5b95ee78a4db85f35f43b2b4eea85447",
                 "parameters": [
                     {
                         "name": "id",
@@ -1020,6 +1020,27 @@
                 "summary": "Display a listing of all wallets",
                 "description": "Display a listing of all wallets",
                 "operationId": "getWallets",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of all wallets",
@@ -1027,11 +1048,23 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "wallets": {
+                                        "data": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/components/schemas/Wallet"
                                             }
+                                        },
+                                        "current_page": {
+                                            "type": "integer"
+                                        },
+                                        "last_page": {
+                                            "type": "integer"
+                                        },
+                                        "per_page": {
+                                            "type": "integer"
+                                        },
+                                        "total": {
+                                            "type": "integer"
                                         }
                                     },
                                     "type": "object"
@@ -1136,12 +1169,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "wallet": {
-                                            "$ref": "#/components/schemas/Wallet"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/Wallet"
                                 }
                             }
                         }
