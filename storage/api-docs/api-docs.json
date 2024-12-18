@@ -892,7 +892,7 @@
         "/api/forgot-password": {
             "post": {
                 "tags": [
-                    "Authentication"
+                    "Users"
                 ],
                 "summary": "Send password reset link",
                 "description": "Sends a password reset link to the user's email",
@@ -946,7 +946,7 @@
         "/api/reset-password": {
             "post": {
                 "tags": [
-                    "Authentication"
+                    "Users"
                 ],
                 "summary": "Reset password",
                 "description": "Reset user's password using token",
@@ -1021,6 +1021,25 @@
                 "description": "Display a listing of all wallets",
                 "operationId": "getWallets",
                 "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
                     {
                         "name": "page",
                         "in": "query",
@@ -1351,6 +1370,27 @@
                 "summary": "Get all wallet types",
                 "description": "Returns a paginated list of all wallet types",
                 "operationId": "indexWalletTypes",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -2001,10 +2041,6 @@
         {
             "name": "Wallet Types",
             "description": "API Endpoints for managing wallet types"
-        },
-        {
-            "name": "Authentication",
-            "description": "Authentication"
         }
     ]
 }

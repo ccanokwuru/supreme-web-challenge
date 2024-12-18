@@ -448,7 +448,7 @@ class UserController extends Controller
     /**
      * @OA\Post(
      *     path="/api/forgot-password",
-     *     tags={"Authentication"},
+     *     tags={"Users"},
      *     summary="Send password reset link",
      *     description="Sends a password reset link to the user's email",
      *     @OA\RequestBody(
@@ -501,7 +501,7 @@ class UserController extends Controller
     /**
      * @OA\Post(
      *     path="/api/reset-password",
-     *     tags={"Authentication"},
+     *     tags={"Users"},
      *     summary="Reset password",
      *     description="Reset user's password using token",
      *     @OA\RequestBody(
