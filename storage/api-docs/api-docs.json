@@ -703,7 +703,7 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": []
+                        "bearerAuth": "Bearer {}"
                     }
                 ]
             },
@@ -784,7 +784,7 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": []
+                        "bearerAuth": "Bearer {}"
                     }
                 ]
             },
@@ -822,7 +822,7 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": []
+                        "bearerAuth": "Bearer {}"
                     }
                 ]
             }
@@ -1322,7 +1322,9 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "balance"
+                                    "balance",
+                                    "user_id",
+                                    "wallet_type_id"
                                 ],
                                 "properties": {
                                     "name": {
@@ -1332,6 +1334,12 @@
                                     "balance": {
                                         "type": "number",
                                         "format": "float"
+                                    },
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "wallet_type_id": {
+                                        "type": "integer"
                                     }
                                 },
                                 "type": "object"
@@ -1893,6 +1901,18 @@
                                         "type": "string",
                                         "example": "For saving money",
                                         "nullable": true
+                                    },
+                                    "min_balance": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "default": "0.00",
+                                        "example": "0.00"
+                                    },
+                                    "interest_rate": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "default": "0.00",
+                                        "example": "0.00"
                                     }
                                 },
                                 "type": "object"
@@ -2093,6 +2113,18 @@
                                         "type": "string",
                                         "example": "Updated description",
                                         "nullable": true
+                                    },
+                                    "min_balance": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "default": "0.00",
+                                        "example": "0.00"
+                                    },
+                                    "interest_rate": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "default": "0.00",
+                                        "example": "0.00"
                                     }
                                 },
                                 "type": "object"
@@ -2617,9 +2649,13 @@
                         "type": "string",
                         "example": "Savings wallet type"
                     },
-                    "status": {
+                    "min_balance": {
                         "type": "string",
-                        "example": "active"
+                        "example": "0.00"
+                    },
+                    "interest_rate": {
+                        "type": "string",
+                        "example": "0.00"
                     },
                     "created_at": {
                         "type": "string",

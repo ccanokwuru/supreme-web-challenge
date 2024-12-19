@@ -116,7 +116,9 @@ class WalletTypeController extends Controller
      *         @OA\JsonContent(
      *             required={"name"},
      *             @OA\Property(property="name", type="string", maxLength=255, example="Savings"),
-     *             @OA\Property(property="description", type="string", nullable=true, example="For saving money")
+     *             @OA\Property(property="description", type="string", nullable=true, example="For saving money"),
+     *             @OA\Property(property="min_balance", type="number", format="float", example="0.00", default="0.00"),
+     *             @OA\Property(property="interest_rate", type="number", format="float", example="0.00", default="0.00")
      *         )
      *     ),
      *     @OA\Response(
@@ -212,7 +214,13 @@ class WalletTypeController extends Controller
      */
     public function show(string $id)
     {
-        $walletType = WalletType::findOrFail($id);
+        $walletType = WalletType::with(
+            [
+                'wallets' => function ($query) {
+                    $query->latest()->limit(15);
+                }
+            ]
+        )->findOrFail($id);
         return response()->json($walletType);
     }
 
@@ -239,7 +247,9 @@ class WalletTypeController extends Controller
      *         @OA\JsonContent(
      *             required={"name"},
      *             @OA\Property(property="name", type="string", maxLength=255, example="Updated Savings"),
-     *             @OA\Property(property="description", type="string", nullable=true, example="Updated description")
+     *             @OA\Property(property="description", type="string", nullable=true, example="Updated description"),
+     *             @OA\Property(property="min_balance", type="number", format="float", example="0.00", default="0.00"),
+     *             @OA\Property(property="interest_rate", type="number", format="float", example="0.00", default="0.00")
      *         )
      *     ),
      *     @OA\Response(

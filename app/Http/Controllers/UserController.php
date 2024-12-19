@@ -154,8 +154,16 @@ class UserController extends Controller
      */
     public function get_user(string $id)
     {
-        $user = User::findorFail($id);
-
+        $user = User::with(
+            [
+                'wallets' => function ($q) {
+                    $q->latest()->take(15);
+                },
+                'transactions' => function ($q) {
+                    $q->latest()->take(15);
+                }
+            ]
+        )->findOrFail($id);
         return response()->json(['user' => $user]);
     }
 

@@ -27,9 +27,14 @@ use Illuminate\Database\Eloquent\Model;
  *        example="Savings wallet type"
  *    ),
  *    @OA\Property(
- *        property="status",
+ *        property="min_balance",
  *        type="string",
- *        example="active"
+ *        example="0.00"
+ *    ),
+ *    @OA\Property(
+ *        property="interest_rate",
+ *        type="string",
+ *        example="0.00"
  *    ),
  *    @OA\Property(
  *        property="created_at",
@@ -63,7 +68,9 @@ class WalletType extends Model
     protected $fillable = [
         'name',
         'description',
-        'status'
+        'status',
+        'min_balance',
+        'interest_rate'
     ];
 
     /**

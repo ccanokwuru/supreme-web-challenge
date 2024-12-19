@@ -114,9 +114,11 @@ class WalletController extends Controller
      *         required=true,
      *         description="Wallet creation data",
      *         @OA\JsonContent(
-     *             required={"name", "balance"},
+     *             required={"name", "balance", "user_id", "wallet_type_id"},
      *             @OA\Property(property="name", type="string", maxLength=255),
-     *             @OA\Property(property="balance", type="number", format="float")
+     *             @OA\Property(property="balance", type="number", format="float"),
+     *             @OA\Property(property="user_id", type="integer"),
+     *             @OA\Property(property="wallet_type_id", type="integer")
      *         )
      *     ),
      *     @OA\Response(
@@ -161,7 +163,9 @@ class WalletController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'balance' => 'required|numeric'
+            'balance' => 'required|numeric',
+            'wallet_type_id' => 'required|exists:wallet_types,id',
+            'user_id' => 'required|exists:users,id'
         ]);
 
         $wallet = Wallet::create($validated);
@@ -225,7 +229,9 @@ class WalletController extends Controller
      */
     public function show(string $id)
     {
-        $wallet = Wallet::find($id);
+        $wallet = Wallet::with(['user', 'wallet_type', 'transactions' => function ($query) {
+            $query->latest()->limit(15);
+        }])->find($id);
         return response()->json($wallet);
     }
 
