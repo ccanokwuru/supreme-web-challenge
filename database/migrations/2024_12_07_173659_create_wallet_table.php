@@ -11,13 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('wallets', function (Blueprint $table) {
+        Schema::create('wallets', function (Blueprint $table) {
             //
             $table->id();
-            $table->foreign('user_id')->onDelete('set null')->onUpdate('cascade');
-            $table->foreign('wallet_type_id')->onDelete('set null')->onUpdate('cascade');
+            $table->foreignId('user_id')
+                ->nullable()
+                ->on('users')
+                ->onDelete('set null')
+                ->onUpdate('cascade');
+            $table->foreignId('wallet_type_id')
+                ->nullable()
+                ->on('wallet_types')
+                ->onDelete('set null')
+                ->onUpdate('cascade');
             $table->string('currency')->default('NGN');
-            $table->decimal('balance')->default(0);
+            $table->decimal('balance')->default('0.00');
             $table->timestamps();
         });
     }

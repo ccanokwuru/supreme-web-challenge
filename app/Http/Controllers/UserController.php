@@ -23,12 +23,16 @@ class UserController extends Controller
      *     path="/api/users",
      *     summary="Retrieve a list of all registered users",
      *     tags={"Users"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
      *         description="Page number for pagination",
      *         required=false,
-     *         @OA\Schema(type="integer")
+     *         @OA\Schema(
+     *             type="integer",
+     *             example="1"
+     *         )
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -41,13 +45,28 @@ class UserController extends Controller
      *             @OA\Property(property="per_page", type="integer"),
      *             @OA\Property(property="total", type="integer")
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized access"
      *     )
      * )
      * @return \Illuminate\Http\JsonResponse Returns JSON response containing paginated users
      */
     public function all_users(Request $request)
     {
-        return response()->json(User::paginate($request->input('per_page', 15), ['*'], 'page', $request->input('page', 1)));
+        return response()->json(
+            User::paginate(
+                $request->input('per_page', 15),
+                ['*'],
+                'page',
+                $request->input('page', 1)
+            )
+        );
     }
 
     /**
@@ -87,9 +106,9 @@ class UserController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
+        $validated['password'] = Hash::make($validated['password']);
         $user = User::create($validated);
-
-        return response()->json(['user' => $user], 201);
+        return response()->json($user, 201);
     }
 
     /**
@@ -99,6 +118,7 @@ class UserController extends Controller
      *     path="/api/users/{user}",
      *     summary="Retrieve detailed information about a specific user",
      *     tags={"Users"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="user",
      *         in="path",
@@ -119,13 +139,23 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=404,
      *         description="Specified user not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized access"
      *     )
-     * )
-     * @param \App\Models\User $user The user model instance to retrieve
+     * )     
+     * @param string $id The user model instance to retrieve
      * @return \Illuminate\Http\JsonResponse Returns JSON response with user details
      */
-    public function get_user(User $user)
+    public function get_user(string $id)
     {
+        $user = User::findorFail($id);
+
         return response()->json(['user' => $user]);
     }
 
@@ -136,6 +166,7 @@ class UserController extends Controller
      *     path="/api/users/{user}",
      *     summary="Update an existing user's information",
      *     tags={"Users"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="user",
      *         in="path",
@@ -155,6 +186,11 @@ class UserController extends Controller
      *         description="User information successfully updated",
      *         @OA\JsonContent(
      *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="User updated successfully"
+     *             ),
+     *             @OA\Property(
      *                 property="user",
      *                 ref="#/components/schemas/User"
      *             )
@@ -165,25 +201,29 @@ class UserController extends Controller
      *         description="Specified user not found"
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
      *         response=422,
      *         description="Validation failed due to invalid input"
      *     )
      * )
      * @param \Illuminate\Http\Request $request The request containing update data
-     * @param \App\Models\User $user The user model instance to update
+     * @param string $id The user model instance to update
      * @return \Illuminate\Http\JsonResponse Returns JSON response with updated user data
      */
-    public function update_user(Request $request, User $user)
+    public function update_user(Request $request, string $id)
     {
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
             'password' => 'sometimes|string|min:8',
         ]);
-
+        $user = User::findorFail($id);
         $user->update($validated);
 
-        return response()->json(['user' => $user]);
+        return response()->json(['user' => $user, 'message' => 'User updated successfully']);
     }
 
     /**
@@ -193,6 +233,7 @@ class UserController extends Controller
      *     path="/api/users/{user}",
      *     summary="Remove a user account from the system",
      *     tags={"Users"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="user",
      *         in="path",
@@ -207,13 +248,22 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=404,
      *         description="Specified user not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized access"
      *     )
      * )
      * @param \App\Models\User $user The user model instance to delete
      * @return \Illuminate\Http\JsonResponse Returns empty JSON response with 204 status
      */
-    public function delete_account(User $user)
+    public function delete_account(string $id)
     {
+        $user = User::findorFail($id);
         $user->delete();
 
         return response()->json(null, 204);
@@ -308,6 +358,7 @@ class UserController extends Controller
      *     summary="Search and filter users with pagination support",
      *     description="Search users by name, email, or role with customizable pagination",
      *     tags={"Users"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="query",
      *         in="query",
@@ -355,7 +406,7 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=422,
      *         description="Validation failed due to invalid input"
-     *     )
+     *     )     
      * )
      * @param \Illuminate\Http\Request $request The request containing search and pagination parameters
      * @return \Illuminate\Http\JsonResponse Returns JSON response with paginated search results

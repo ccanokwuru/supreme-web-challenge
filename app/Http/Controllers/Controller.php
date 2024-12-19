@@ -18,10 +18,14 @@ use Illuminate\Routing\Controller as BaseController;
  * )
  * @OA\SecurityScheme(
  *     type="http",
+ *     description="Login with email and password to get the authentication token",
+ *     name="Authorization",
+ *     in="header",
  *     scheme="bearer",
  *     bearerFormat="JWT",
  *     securityScheme="bearerAuth"
  * )
+ * @OA\Security({"bearerAuth": "Bearer {}"})
  */
 class Controller extends BaseController
 {

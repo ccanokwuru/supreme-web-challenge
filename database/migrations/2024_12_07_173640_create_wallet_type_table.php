@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('wallet_types', function (Blueprint $table) {
+        Schema::create('wallet_types', function (Blueprint $table) {
             //
             $table->id();
             $table->string('name');
             $table->string('description')->nullable();
-            $table->decimal('min_balance')->default(0);
-            $table->decimal('interest_rate')->default(1);
+            $table->decimal('min_balance')->default('0.00');
+            $table->decimal('interest_rate')->default('0.00');
             $table->timestamps();
         });
     }

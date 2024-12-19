@@ -20,6 +20,7 @@ class TransactionController extends Controller
      *     path="/api/transactions",
      *     tags={"Transactions"},
      *     summary="Get all transactions",
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
@@ -49,8 +50,16 @@ class TransactionController extends Controller
      *             @OA\Property(property="per_page", type="integer"),
      *             @OA\Property(property="total", type="integer")
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden"
      *     )
-     * )
+     * )     
      */
     public function index(Request $request)
     {
@@ -73,6 +82,7 @@ class TransactionController extends Controller
      *     path="/api/transactions/search",
      *     tags={"Transactions"},
      *     summary="Search transactions with filters",
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="id",
      *         in="query",
@@ -165,8 +175,16 @@ class TransactionController extends Controller
      *             @OA\Property(property="per_page", type="integer"),
      *             @OA\Property(property="total", type="integer")
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden"
      *     )
-     * )
+     * )     
      */
     public function search(Request $request)
     {
@@ -219,9 +237,47 @@ class TransactionController extends Controller
      *     path="/api/transactions",
      *     tags={"Transactions"},
      *     summary="Create a new transaction",
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Transaction")
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="user_id",
+     *                 type="string",
+     *                 example="1"
+     *             ),
+     *             @OA\Property(
+     *                 property="wallet_id",
+     *                 type="string",
+     *                 example="1"
+     *             ),
+     *             @OA\Property(
+     *                 property="currency",
+     *                 type="string",
+     *                 example="NGN"
+     *             ),
+     *             @OA\Property(
+     *                 property="type",
+     *                 type="string",
+     *                 example="credit"
+     *             ),
+     *             @OA\Property(
+     *                 property="status",
+     *                 type="string",
+     *                 example="completed"
+     *             ),
+     *             @OA\Property(
+     *                 property="description",
+     *                 type="string",
+     *                 example="Deposit to wallet"
+     *             ),
+     *             @OA\Property(
+     *                 property="amount",
+     *                 type="string",
+     *                 example="100.50"
+     *             )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=201,
@@ -238,6 +294,14 @@ class TransactionController extends Controller
      *                 ref="#/components/schemas/Transaction"
      *             )
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized"
      *     ),
      *     @OA\Response(
      *         response=422,
@@ -260,7 +324,12 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // Add your validation rules here
+            'user_id' => 'required|exists:users,id',
+            'amount' => 'required|numeric|min:0',
+            'type' => 'required|in:income,expense',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'nullable|string|max:255',
+            'date' => 'required|date'
         ]);
 
         $transaction = Transaction::create($validated);
@@ -277,6 +346,7 @@ class TransactionController extends Controller
      *     path="/api/transactions/{id}",
      *     tags={"Transactions"},
      *     summary="Get a specific transaction",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -301,10 +371,18 @@ class TransactionController extends Controller
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="Transaction not found"
      *     )
-     * )
+     * )     
      */
     public function show(Transaction $transaction)
     {
@@ -321,6 +399,7 @@ class TransactionController extends Controller
      *     path="/api/transactions/{id}",
      *     tags={"Transactions"},
      *     summary="Update a specific transaction",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -330,7 +409,44 @@ class TransactionController extends Controller
      *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Transaction")
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="user_id",
+     *                 type="string",
+     *                 example="1"
+     *             ),
+     *             @OA\Property(
+     *                 property="wallet_id",
+     *                 type="string",
+     *                 example="1"
+     *             ),
+     *             @OA\Property(
+     *                 property="currency",
+     *                 type="string",
+     *                 example="NGN"
+     *             ),
+     *             @OA\Property(
+     *                 property="type",
+     *                 type="string",
+     *                 example="credit"
+     *             ),
+     *             @OA\Property(
+     *                 property="status",
+     *                 type="string",
+     *                 example="completed"
+     *             ),
+     *             @OA\Property(
+     *                 property="description",
+     *                 type="string",
+     *                 example="Deposit to wallet"
+     *             ),
+     *             @OA\Property(
+     *                 property="amount",
+     *                 type="string",
+     *                 example="100.50"
+     *             )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -343,10 +459,18 @@ class TransactionController extends Controller
      *                 example="Transaction updated successfully"
      *             ),
      *             @OA\Property(
-     *                 property="data",
+     *                 property="transaction",
      *                 ref="#/components/schemas/Transaction"
      *             )
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized"
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -361,10 +485,13 @@ class TransactionController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            // Add your validation rules here
+            'status' => 'required|string|in:pending,completed,failed',
+            'description' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0'
         ]);
-        $transaction = Transaction::findOrFail($id)
-            ->update($validated);
+        $transaction = Transaction::findOrFail($id);
+
+        $transaction->update($validated);
         return response()->json([
             'message' => 'Transaction updated successfully',
             'data' => $transaction
@@ -378,6 +505,7 @@ class TransactionController extends Controller
      *     path="/api/transactions/{id}",
      *     tags={"Transactions"},
      *     summary="Delete a specific transaction",
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -390,10 +518,18 @@ class TransactionController extends Controller
      *         description="Transaction deleted successfully"
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="Transaction not found"
      *     )
-     * )
+     * )     
      */
     public function destroy(string $id)
     {

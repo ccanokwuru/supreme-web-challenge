@@ -31,6 +31,7 @@ class WalletTypeController extends Controller
      *     description="Returns a paginated list of all wallet types",
      *     operationId="indexWalletTypes",
      *     tags={"Wallet Types"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
@@ -63,6 +64,20 @@ class WalletTypeController extends Controller
      *             @OA\Property(property="to", type="integer"),
      *             @OA\Property(property="total", type="integer")
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
      *     )
      * )
      *
@@ -94,6 +109,7 @@ class WalletTypeController extends Controller
      *     description="Creates a new wallet type and stores it in the database",
      *     operationId="storeWalletType",
      *     tags={"Wallet Types"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Wallet type data",
@@ -107,6 +123,20 @@ class WalletTypeController extends Controller
      *         response=201,
      *         description="Wallet type created successfully",
      *         @OA\JsonContent(ref="#/components/schemas/WalletType")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=422,
@@ -141,6 +171,7 @@ class WalletTypeController extends Controller
      *     description="Returns details of a specific wallet type",
      *     operationId="showWalletType",
      *     tags={"Wallet Types"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -154,6 +185,20 @@ class WalletTypeController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/WalletType")
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="Wallet type not found",
      *         @OA\JsonContent(
@@ -162,11 +207,12 @@ class WalletTypeController extends Controller
      *     )
      * )
      *
-     * @param  \App\Models\WalletType  $walletType
+     * @param  string  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(WalletType $walletType)
+    public function show(string $id)
     {
+        $walletType = WalletType::findOrFail($id);
         return response()->json($walletType);
     }
 
@@ -179,6 +225,7 @@ class WalletTypeController extends Controller
      *     description="Updates an existing wallet type",
      *     operationId="updateWalletType",
      *     tags={"Wallet Types"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -201,6 +248,20 @@ class WalletTypeController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/WalletType")
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="Wallet type not found",
      *         @OA\JsonContent(
@@ -218,15 +279,17 @@ class WalletTypeController extends Controller
      * )
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\WalletType  $walletType
+     * @param  string  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, WalletType $walletType)
+    public function update(Request $request, string $id)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string'
         ]);
+
+        $walletType = WalletType::findOrFail($id);
 
         $walletType->update($validated);
         return response()->json($walletType);
@@ -241,6 +304,7 @@ class WalletTypeController extends Controller
      *     description="Deletes an existing wallet type",
      *     operationId="destroyWalletType",
      *     tags={"Wallet Types"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -253,6 +317,20 @@ class WalletTypeController extends Controller
      *         description="Wallet type deleted successfully"
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="Wallet type not found",
      *         @OA\JsonContent(
@@ -261,11 +339,12 @@ class WalletTypeController extends Controller
      *     )
      * )
      *
-     * @param  \App\Models\WalletType  $walletType
+     * @param  string  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(WalletType $walletType)
+    public function destroy(string $id)
     {
+        $walletType = WalletType::findOrFail($id);
         $walletType->delete();
         return response()->json(null, 204);
     }
@@ -279,6 +358,7 @@ class WalletTypeController extends Controller
      *     description="Search for wallet types based on name, description, or status",
      *     operationId="searchWalletTypes",
      *     tags={"Wallet Types"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="query",
      *         in="query",
@@ -311,8 +391,12 @@ class WalletTypeController extends Controller
      *         response=200,
      *         description="Successful operation",
      *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/WalletType")
+     *             type="object",
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/User")),
+     *             @OA\Property(property="current_page", type="integer"),
+     *             @OA\Property(property="last_page", type="integer"),
+     *             @OA\Property(property="per_page", type="integer"),
+     *             @OA\Property(property="total", type="integer")
      *         )
      *     ),
      *     @OA\Response(
@@ -320,6 +404,20 @@ class WalletTypeController extends Controller
      *         description="Invalid parameters",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Invalid parameters provided")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Forbidden")
      *         )
      *     )
      * )
@@ -349,6 +447,6 @@ class WalletTypeController extends Controller
 
         $walletTypes->orderBy($sort, $order);
 
-        return response()->json($walletTypes->get());
+        return response()->json($walletTypes->paginate($request->input('per_page', 15)));
     }
 }

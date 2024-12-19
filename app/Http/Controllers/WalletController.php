@@ -21,6 +21,7 @@ class WalletController extends Controller
      *     operationId="getWallets",
      *     summary="Display a listing of all wallets",
      *     tags={"Wallets"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
@@ -64,9 +65,25 @@ class WalletController extends Controller
      *             @OA\Property(property="per_page", type="integer"),
      *             @OA\Property(property="total", type="integer")
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
      *     )
-     * )
-     * 
+     * )     
+     *  
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -92,6 +109,7 @@ class WalletController extends Controller
      *     operationId="storeWallet",
      *     summary="Store a newly created wallet",
      *     tags={"Wallets"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Wallet creation data",
@@ -117,9 +135,25 @@ class WalletController extends Controller
      *             type="object",
      *             @OA\Property(property="errors", type="object")
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
      *     )
-     * )
-     * 
+     * )     
+     *  
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -148,6 +182,7 @@ class WalletController extends Controller
      *     operationId="showWallet",
      *     summary="Display the specified wallet",
      *     tags={"Wallets"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="wallet",
      *         in="path",
@@ -166,6 +201,22 @@ class WalletController extends Controller
      *     @OA\Response(
      *         response=404,
      *         description="Wallet not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
      *     )
      * )
      * 
@@ -186,6 +237,7 @@ class WalletController extends Controller
      *     operationId="updateWallet",
      *     summary="Update the specified wallet",
      *     tags={"Wallets"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="wallet",
      *         in="path",
@@ -218,6 +270,22 @@ class WalletController extends Controller
      *     @OA\Response(
      *         response=404,
      *         description="Wallet not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
      *     )
      * )
      * 
@@ -249,6 +317,7 @@ class WalletController extends Controller
      *     operationId="deleteWallet",
      *     summary="Remove the specified wallet",
      *     tags={"Wallets"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="wallet",
      *         in="path",
@@ -267,6 +336,22 @@ class WalletController extends Controller
      *     @OA\Response(
      *         response=404,
      *         description="Wallet not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
      *     )
      * )
      * 
@@ -291,6 +376,7 @@ class WalletController extends Controller
      *     operationId="searchWallets",
      *     summary="Search wallets by name",
      *     tags={"Wallets"},
+     *     security={{"bearerAuth": "Bearer {}"}},
      *     @OA\Parameter(
      *         name="query",
      *         in="query",
@@ -312,6 +398,14 @@ class WalletController extends Controller
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
      *     )
      * )
